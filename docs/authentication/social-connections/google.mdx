@@ -1,28 +1,28 @@
 ---
 title: Google
-description: Learn how to set up social connection with Google.
+description: Learn how to set up a social connection with Google in your Clerk application.
 ---
 
 # Google
 
-How to set up social connection with Google
+Learn how to set up a social connection with Google in your Clerk application.
 
-## Overview
+To make the development flow as smooth as possible, Clerk uses preconfigured shared OAuth credentials and redirect URIs for development instances - no other configuration is needed. Simply navigate to the Social Connections page in your Clerk Dashboard, toggle on the LinkedIn option, and click Save.
 
-Adding social connection with Google to your app with Clerk is done in a few steps - you only need to set the **Client ID**, **Client Secret** and **Authorized redirect URI** in your instance settings.
-
-To make the development flow as smooth as possible, Clerk uses  preconfigured shared OAuth credentials and redirect URIs for development instances - no other configuration is needed.
-
-For production instances, you will need to create your own developer account with Google and generate your own Client ID and Client secret.
-
-> The purpose of this guide is to help you setup a Google developer account and a Google OAuth 2.0 project - if you're looking for step-by-step  instructions using Clerk to add Social Connection (OAuth) to your  application, follow the [Social connection (OAuth) guide](/docs/authentication/social-connections/oauth).
+In production instances, you must provide custom credentials, which includes generating your own Client ID and Client Secret using your Google Developer account. Don't worry, this guide will walk you through that process in just a few simple steps.
 
 ## Before you start
 
-- You need to create a Clerk Application in your [Clerk Dashboard](https://dashboard.clerk.com/). For more information, check out our [Set up your application guide](/docs/quickstarts/setup-clerk).
+- You need to create a Clerk application in your [Clerk Dashboard](https://dashboard.clerk.com/). For more information, check out our [Set up your application guide](/docs/quickstarts/setup-clerk).
 - You need to have a Google Developer account. To create one, visit the [Google Cloud console](https://console.developers.google.com/).
 
-## Configuring Google social connection
+## Configuration
+
+<Steps>
+
+### Create a Google application
+
+</Steps>
 
 First, go to the [Social Connections page](https://dashboard.clerk.com/last-active?path=authentication/social) of your Clerk dashboard. From the list of OAuth vendors, enable Google. In the modal that opened, make sure **Use custom credentials** is enabled, and copy the value of the **Authorized redirect URI** field (you will have to paste this in the Google Console in a bit). Leave that window open as you will need to fill in the Client ID and Client Secret values that you will retrieve from the Google Cloud Platform console.
 
