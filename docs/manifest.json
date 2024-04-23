@@ -965,7 +965,6 @@
       ["SignUp and SignIn", "/references/ios/custom-flows/sign-up-sign-in"],
       ["Email / Password", "references/ios/custom-flows/email-password"],
       ["Email / SMS OTP", "references/ios/custom-flows/email-sms-otp"],
-      ["OAuth Connections", "references/ios/custom-flows/oauth-connections"],
       ["Forgot Password", "references/ios/custom-flows/forgot-password"],
       ["Error handling", "references/ios/custom-flows/error-handling"]
     ]

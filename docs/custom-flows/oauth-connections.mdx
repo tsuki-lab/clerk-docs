@@ -11,14 +11,16 @@ In case one of our [standard OAuth integration methods](/docs/authentication/soc
   You still need to configure your instance through the Clerk Dashboard, as described at [the top of the OAuth guide](/docs/authentication/social-connections/oauth#configuration).
 </Callout>
 
-When using OAuth, the sign-in and sign-up are equivalent. A successful OAuth flow consists of the following steps:
+## Initiate OAuth
 
+When using OAuth, the sign-in and sign-up are equivalent. A successful OAuth flow consists of the following steps:
+<Tabs items={["React", "iOS (Swift)"]}>
+<Tab>
 1. Start the OAuth flow by calling [`SignIn.authenticateWithRedirect(params)`](/docs/references/javascript/sign-in/authenticate-with#authenticate-with-redirect) or [`SignUp.authenticateWithRedirect(params)`](/docs/references/javascript/sign-up/authenticate-with#authenticate-with-redirect). Note that both of these methods require a `redirectUrl` param, which is the URL that the browser will be redirected to once the user authenticates with the OAuth provider.
 2. Create a route at the URL `redirectUrl` points, typically `/sso-callback`, that calls the [`Clerk.handleRedirectCallback()`](/docs/references/javascript/clerk/handle-navigation#handle-redirect-callback) or simply renders the prebuilt [`<AuthenticateWithRedirectCallback/>`](/docs/components/control/authenticate-with-callback) component.
 
 The React example below uses `react-router-dom` to define the required route. For NextJS apps, you only need to create a `pages/sso-callback` file.
 
-<CodeBlockTabs type="framework" options={["React"]}>
 ```jsx
 import React from "react";
 import {
@@ -94,10 +96,52 @@ function SignInOAuthButtons() {
 
 export default App;
 ```
-</CodeBlockTabs>
+</Tab>
+<Tab>
+1. Start the OAuth flow by creating a [`SignUp`][signup-ref] or [`SignIn`][signin-ref] object using the `.externalProvider` strategy.
+1. Call `.authenticateWithRedirect()` on the `SignUp`/`SignIn` object to start the OAuth flow.
+
+```swift
+import SwiftUI
+import ClerkSDK
+
+struct OAuthView: View {
+    @ObservedObject private var clerk = Clerk.shared
+    
+    var body: some View {
+        Button("Sign in with oauth", action: signInWithOAuth)
+    }
+    
+    private func signInWithOAuth() {
+        Task {
+            do {
+                // Create a new sign in object with 
+                // the externalProvider strategy
+                try await clerk.client?.createSignIn(strategy: .externalProvider(.google))
+
+                // Will present an ASWebAuthenticationSession
+                // to authenticate with the provided provider
+                try await clerk.client?.signIn?.authenticateWithRedirect()
+                
+                // If the sign in succeeds, `clerk.user` and `clerk.session` will have values
+                if let user = clerk.user {
+                    print(user.id)
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+}
+```
+</Tab>
+</Tabs>
+
+### Initiate OAuth for signed-in users
 
 To initiate an OAuth flow for a user that is already signed in, you can use the [`user.createExternalAccount(params)`](/docs/references/javascript/user/create-metadata#create-external-account) method, where `user` is a reference to the currently signed in user.
 
+<CodeBlockTabs options={["React", "iOS (Swift)"]}>
 ```jsx
 user
   .createExternalAccount({ strategy: strategy, redirectUrl: 'your-redirect-url' })
@@ -109,16 +153,37 @@ user
     // handle error
   });
 ```
+```swift
+// With the iOS SDK, you must also call
+// .reauthorize() on the new external account object.
+let newExternalAccount = try await user.createExternalAccount(.google)
+try await newExternalAccount.reauthorize()
+```
+</CodeBlockTabs>
 
-## OAuth for React Native applications
+## OAuth for mobile applications
 
-With Clerk, you can add OAuth flows in your [React Native or Expo applications](/docs/quickstarts/expo).
+With Clerk, you can add OAuth flows in your [iOS](/docs/quickstarts/ios), [React Native, or Expo applications](/docs/quickstarts/expo).
 
 Clerk ensures that security critical nonces will be passed only to allowlisted URLs when the OAuth flow is complete in native browsers or webviews.
 
 So for maximum security in your production instances, you need to allowlist your custom redirect URLs via the [Clerk Dashboard](https://dashboard.clerk.com/) or the [Clerk Backend API](https://clerk.com/docs/reference/backend-api/tag/Redirect-URLs).
 
+<Tabs items={["React Native/Expo", "iOS (Swift)"]}>
+<Tab>
 To allowlist a redirect URL via the Clerk Dashboard, go to **User & Authentication > [Social Connections](https://dashboard.clerk.com/last-active?path=user-authentication/social-connections)**. On the **Social Connections** page, click on the **Settings* tab and add your redirect URL to the **Redirect URLs** list.
+</Tab>
+<Tab>
+To allowlist a redirect URL via the Clerk Dashboard, go to **User & Authentication > [Social Connections](https://dashboard.clerk.com/last-active?path=user-authentication/social-connections)**. On the **Social Connections** page, click on the **Settings* tab and add `{your_bundle_id}://callback` to the **Redirect URLs** list.
+
+By default, the Clerk iOS SDK expects a redirect URL of `{your_bundle_id}://callback`. To use a custom redirect URL, you must:
+1. Add `{your_custom_redirect_url}` to the allowlist.
+1. Set this url as your `redirectUrl` within your application. 
+    ```swift
+    Clerk.shared.redirectConfig.redirectUrl = "{your_custom_redirect_url}"
+    ```
+</Tab>
+</Tabs>
 
 <Images
   width={3024}
@@ -175,3 +240,6 @@ if (userNeedsToBeCreated) {
 }
 ```
 </CodeBlockTabs>
+
+
+
