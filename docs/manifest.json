@@ -960,13 +960,8 @@
       "root": "references/ios"
     },[
       ["Overview", "/references/ios/overview"],
-      "# Custom Flows",
-      ["Overview", "/references/ios/custom-flows/overview"],
-      ["SignUp and SignIn", "/references/ios/custom-flows/sign-up-sign-in"],
-      ["Email / Password", "references/ios/custom-flows/email-password"],
-      ["Email / SMS OTP", "references/ios/custom-flows/email-sms-otp"],
-      ["Forgot Password", "references/ios/custom-flows/forgot-password"],
-      ["Error handling", "references/ios/custom-flows/error-handling"]
+      "# Guides",
+      ["SignUp and SignIn", "/references/ios/guides/sign-up-sign-in"]
     ]
   ],
   [

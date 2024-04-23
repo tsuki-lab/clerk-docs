@@ -56,7 +56,7 @@ A successful sign-up consists of the following steps:
 
 Let's see the above in action. If you want to learn more about sign-ups, check out our documentation on Clerk's [sign-up flow](/docs/custom-flows/overview#sign-up-flow).
 
-<Tabs type="framework" items={["Next.js", "React", "JavaScript"]}>
+<Tabs type="framework" items={["Next.js", "React", "JavaScript", "iOS (Swift)"]}>
   <Tab>
     <CodeBlockTabs type="router" options={["App Router"]}>
     ```ts filename="app/sign-up/page.tsx"
@@ -210,9 +210,53 @@ Let's see the above in action. If you want to learn more about sign-ups, check o
   });
   ```
   </Tab>
+  <Tab>
+  ```swift
+  import SwiftUI
+  import ClerkSDK
+
+  struct SignUpView: View {
+      @ObservedObject private var clerk = Clerk.shared
+      
+      var body: some View {
+          Button("Sign up without password", action: signUpWithoutPassword)
+      }
+      
+      private func signUpWithoutPassword() {
+          Task {
+              do {
+                  // Kick off the sign-up process, passing the user's phone number.
+                  try await clerk.client?.createSignUp(strategy: .standard(phoneNumber: "+111111111"))
+                  
+                  // Prepare phone number verification. An SMS message
+                  // will be sent to the user with a one-time
+                  // verification code.
+                  try await clerk.client?.signUp?.prepareVerification(.phoneCode)
+                  
+                  // Attempt to verify the user's phone number by
+                  // providing the one-time code they received.
+                  try await clerk.client?.signUp?.attemptVerification(.phoneCode(code: "123456"))
+                  
+                  // If the sign up succeeds, there will be
+                  // values for `clerk.user` and `clerk.session`
+                  if let user = clerk.user {
+                      print(user.id)
+                  }
+              } catch {
+                  print(error.localizedDescription)
+              }
+          }
+      }
+  }
+  ```
+  </Tab>
 </Tabs>
 
-You can also verify your users via their email address. There's two additional helper methods: [`prepareEmailAddressVerification`](/docs/references/javascript/sign-up/email-verification#prepare-email-address-verification) and [`attemptEmailAddressVerification`](/docs/references/javascript/sign-up/email-verification#attempt-email-address-verification) that work the same way as their phone number counterparts do. You can find all available methods in the [`SignUp`](/docs/references/javascript/sign-in/sign-in) object documentation.
+You can also verify your users via their email address. There are two additional helper methods:
+    - [`prepareEmailAddressVerification`](/docs/references/javascript/sign-up/email-verification#prepare-email-address-verification)
+    - [`attemptEmailAddressVerification`](/docs/references/javascript/sign-up/email-verification#attempt-email-address-verification)
+  
+Both work the same way as their phone number counterparts do. You can find all available methods in the [`SignUp`](/docs/references/javascript/sign-in/sign-in) object documentation.
 
 #### Sign in using a custom flow (Clerk API)
 
@@ -226,7 +270,7 @@ So, in essence, when you want to authenticate users in your application, you nee
 
 Let's see the above in action. If you want to learn more about sign-ins, check out our documentation on Clerk's [sign-in flow](/docs/custom-flows/overview#sign-in-flow).
 
-<Tabs type="framework" items={["Next.js", "React", "JavaScript"]}>
+<Tabs type="framework" items={["Next.js", "React", "JavaScript", "iOS (Swift)"]}>
   <Tab>
     <CodeBlockTabs type="router" options={["App Router"]}>
       ```tsx filename="app/sign-in/page.tsx"
@@ -417,6 +461,47 @@ Let's see the above in action. If you want to learn more about sign-ins, check o
         code: "123456",
     });
     ```
+  </Tab>
+  <Tab>
+  ```swift
+  import SwiftUI
+  import ClerkSDK
+
+  struct SignInView: View {
+      @ObservedObject private var clerk = Clerk.shared
+      
+      var body: some View {
+          Button("Sign in without password ", action: signInWithoutPassword)
+      }
+      
+      private func signInWithoutPassword() {
+          Task {
+              do {
+                  // Kick off the sign-in process, passing the user's
+                  // authentication identifier. In this case it's their
+                  // phone number.
+                  try await clerk.client?.createSignIn(strategy: .identifier("+11111111111"))
+                  
+                  // Prepare first factor verification, specifying
+                  // the phone code strategy.
+                  try await clerk.client?.signIn?.prepareFirstFactor(for: .phoneCode)
+                  
+                  // Attempt to verify the user providing the
+                  // one-time code they received.
+                  try await clerk.client?.signIn?.attemptFirstFactor(for: .phoneCode(code: "123456"))
+                  
+                  // If the sign in succeeds, there will be 
+                  // values for `clerk.user` and `clerk.session`
+                  if let user = clerk.user {
+                      print(user.id)
+                  }
+              } catch {
+                  print(error.localizedDescription)
+              }
+          }
+      }
+  }
+  ```
   </Tab>
 </Tabs>
 

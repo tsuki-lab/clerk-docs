@@ -11,7 +11,7 @@ When using the [`signUp()`](/docs/references/react/use-sign-up) or [`signIn()`](
 
 A user is attempting to sign up with your application, but they are attempting to use a password that has been found in an online data breach. This will return a 422 error code with the message: "Password has been found in an online data breach. For account safety, please use a different password."
 
-<CodeBlockTabs type="framework" options={["React", "JavaScript"]}>
+<CodeBlockTabs type="framework" options={["React", "JavaScript", "iOS (Swift)"]}>
 ```jsx
 import { useState } from "react";
 import { useSignUp } from "@clerk/clerk-react";
@@ -99,11 +99,39 @@ const signUp = await client.signUp.create({
   .then((res) => console.log("response", res))
   .catch((err) => setError(err.errors[0].message));
 ```
+```swift
+import SwiftUI
+import ClerkSDK
+
+struct SignUpErrorView: View {
+    @ObservedObject private var clerk = Clerk.shared
+    @State private var error: Error?
+    
+    var body: some View {
+        Button("Sign Up", action: signUp)
+        if let error {
+            Text(error.localizedDescription)
+            // "Password has been found in an online data breach. 
+            // For account safety, please use a different password."
+        }
+    }
+    
+    private func signUp() {
+        Task {
+            do {
+                try await clerk.client?.createSignUp(strategy: .standard(emailAddress: "example@email.com", password: "Tester01!"))
+            } catch {
+                self.error = error
+            }
+        }
+    }
+}
+```
 </CodeBlockTabs>
 
 Errors returned from the [`signIn()`](/docs/references/react/use-sign-in) function are handled in a similar way:
 
-<CodeBlockTabs type="framework" options={["React", "JavaScript"]}>
+<CodeBlockTabs type="framework" options={["React", "JavaScript", "iOS (Swift)"]}>
 ```jsx
 import { useState } from "react";
 import { useSignIn } from "@clerk/clerk-react";
@@ -201,6 +229,32 @@ const signIn = await client.signIn.create({
   .then((result) => console.log("result", result))
   .catch((err) => console.error("error", err.errors[0].message));
 ```
+```swift
+import SwiftUI
+import ClerkSDK
+
+struct SignInErrorView: View {
+    @ObservedObject private var clerk = Clerk.shared
+    @State private var error: Error?
+    
+    var body: some View {
+        Button("Sign In", action: signIn)
+        if let error {
+            Text(error.localizedDescription)
+        }
+    }
+    
+    private func signIn() {
+        Task {
+            do {
+                try await clerk.client?.createSignIn(strategy: .identifier("example@email.com", password: "Tester01!"))
+            } catch {
+                self.error = error
+            }
+        }
+    }
+}
+```
 </CodeBlockTabs>
 
 ## Special error cases
@@ -234,6 +288,7 @@ You can opt to render the error message returned as-is or format the supplied `l
 
 For instance, if you wish to inform a user at which absolute time they will be able to try again, you could add the remaining seconds to the current time and format the resulting timestamp.
 
+<CodeBlockTabs options={["JavaScript", "iOS (Swift)"]}>
 ```js
 if (errors[0].code === 'user_locked') {
     // Get the current date and time
@@ -249,3 +304,24 @@ if (errors[0].code === 'user_locked') {
     console.log('Your account is locked, you will be able to try again at ' + lockoutExpiresAt);
 }
 ```
+```swift
+// In order to access the custom properties of the
+// clerk error payload (code, meta, etc.),
+// you will need to cast your error to the
+// ClerkAPIError type.
+
+Task {
+    do {
+        try await clerk.client?.createSignIn(strategy: .identifier("example@email.com", password: "********"))
+        
+    } catch let error as ClerkAPIError {
+        if let lockoutDuration = error.meta?["lockout_expires_in_seconds"]?.doubleValue {
+            print(lockoutDuration)
+        }
+        
+    } catch {
+        print(error.localizedDescription)
+    }
+}
+```
+</CodeBlockTabs>
