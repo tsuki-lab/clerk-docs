@@ -76,12 +76,15 @@ const Header = () => {
 
 If the pre-built [`<UserButton />`][user-button] doesn't cover your needs, you can use the [`signOut()`](/docs/references/javascript/clerk/clerk#sign-out) function to build a custom solution.
 
-In this example, the [`useClerk()`](/docs/references/react/use-clerk) hook is used to access the [`signOut()`](https://clerk.com/docs/references/javascript/clerk/clerk#sign-out) function. We then use the [`useRouter()`](https://nextjs.org/docs/pages/api-reference/functions/use-router) hook from Next.js to redirect the user to the home page (`/`) after they sign out.
-
-<CodeBlockTabs type="framework" options={["React", "JavaScript"]}>
+<CodeBlockTabs type="framework" options={["React", "JavaScript", "IOS (Swift)"]}>
 ```jsx
 import { useClerk } from "@clerk/clerk-react";
 import { useRouter } from 'next/navigation'
+
+// This example uses the useClerk() hook to access
+// the signOut() function. We then use the useRouter()
+// hook from Next.js to redirect the user to
+// the home page (`/`) after they sign out.
 
 const SignOutButton = () => {
   const { signOut } = useClerk();
@@ -99,6 +102,32 @@ const SignOutButton = () => {
 ```js
 // Signs-out the current user.
 await window.Clerk.signOut();
+```
+```swift
+import SwiftUI
+import ClerkSDK
+
+struct SignOutView: View {
+    @ObservedObject private var clerk = Clerk.shared
+    
+    var body: some View {
+        if clerk.session != nil {
+            Button("Sign Out", action: signOut)
+        } else {
+            Button("Sign In", action: signIn)
+        }
+    }
+    
+    private func signOut() {
+        Task {
+            do {
+                try await clerk.signOut()
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+}
 ```
 </CodeBlockTabs>
 

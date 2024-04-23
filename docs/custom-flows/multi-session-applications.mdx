@@ -31,7 +31,7 @@ To enable multi-session in your application, you need to configure it in the Cle
 
 ## Get the active session and user
 
-<CodeBlockTabs type="framework" options={["React", "JavaScript"]}>
+<CodeBlockTabs type="framework" options={["React", "JavaScript", "IOS (Swift)"]}>
 ```jsx
 import { useClerk } from "@clerk/clerk-react";
 
@@ -46,11 +46,29 @@ const activeSession = window.Clerk.session;
 // Get the active user
 const activeUser = window.Clerk.user;
 ```
+```swift
+import SwiftUI
+import ClerkSDK
+
+struct ContentView: View {
+    @ObservedObject private var clerk = Clerk.shared
+    
+    var body: some View {
+        if let user = clerk.user {
+            Text(user.id)
+        }
+
+        if let session = clerk.session {
+            Text(session.id)
+        }
+    }
+}
+```
 </CodeBlockTabs>
 
 ## Switch between sessions
 
-<CodeBlockTabs type="framework" options={["React", "JavaScript"]}>
+<CodeBlockTabs type="framework" options={["React", "JavaScript", "IOS (Swift)"]}>
 ```jsx
 import { useClerk } from "@clerk/clerk-react";
 
@@ -70,6 +88,44 @@ const availableSessions = window.Clerk.client.sessions;
 // Use setActive to set the active session.
 window.Clerk.setActive({ session: availableSessions[0].id });
 ```
+```swift
+import SwiftUI
+import ClerkSDK
+
+struct MultiSessionView: View {
+    @ObservedObject private var clerk = Clerk.shared
+
+    private var activeSessions: [Session] {
+        clerk.client?.activeSessions ?? []
+    }
+    
+    var body: some View {
+        VStack {
+            if let currentSession = clerk.session {
+                Text("Current session id is \(currentSession.id)")
+            }
+            
+            ForEach(activeSessions) { session in
+                Button {
+                    setActiveSession(sessionId: session.id)
+                } label: {
+                    Text(session.id)
+                }
+            }
+        }
+    }
+    
+    private func setActiveSession(sessionId: String) {
+        Task {
+            do {
+                try await clerk.setActive(sessionId: sessionId)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+}
+```
 </CodeBlockTabs>
 
 ## Add a new session
@@ -86,7 +142,7 @@ For more information on how Clerk's sign-in flow works, check out the [detailed 
 
 Use [`signOut()`](/docs/references/javascript/clerk/clerk#sign-out) to deactivate all sessions on the current client.
 
-<CodeBlockTabs type="framework" options={["React", "JavaScript"]}>
+<CodeBlockTabs type="framework" options={["React", "JavaScript", "IOS (Swift)"]}>
 ```jsx
 import { useClerk } from "@clerk/clerk-react";
 
@@ -100,13 +156,16 @@ await signOut();
 // Use signOut to sign-out all active sessions.
 await window.Clerk.signOut();
 ```
+```swift
+try await clerk.signOut()
+```
 </CodeBlockTabs>
 
 ## Sign out active session
 
 Use [`signOut()`](/docs/references/javascript/clerk/clerk#sign-out) to deactivate a specific session by passing the session ID.
 
-<CodeBlockTabs type="framework" options={["React", "JavaScript"]}>
+<CodeBlockTabs type="framework" options={["React", "JavaScript", "IOS (Swift)"]}>
 ```jsx
 import { useClerk } from "@clerk/clerk-react";
 
@@ -123,5 +182,8 @@ const activeSession = window.Clerk.session;
 
 // Use signOut to sign-out the active session
 await window.Clerk.signOut(activeSession.id);
+```
+```swift
+try await clerk.signOut(sessionId: session.id)
 ```
 </CodeBlockTabs>

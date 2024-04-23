@@ -1,21 +1,16 @@
 ---
-title: Sign Up and Sign In
-description: Learn how to use the SignUp and SignUp objects to build a custom sign-up and sign-in flow.
+description: Learn how to build a custom sign-up and sign-in flow with the IOS SDK.
 ---
 
-# Sign Up and Sign In
+# Sign Up and Sign In with the IOS SDK
 
-Clerk enables you to build fully custom sign-up and sign-in flows using the `SignUp` and `SignIn` objects.
+Clerk enables you to build fully custom sign-up and sign-in flows using the [`SignUp`](signup-ref) and [`SignIn`](signin-ref) objects.
 
 ## `SignUp`
 
-The [`SignUp`][signup-ref] object enables you to build a custom sign-up flow. The [`SignUp`][signup-ref] object will also contain the state of the sign-up attempt that is currently in progress, which gives you the ability to examine all the details and act accordingly.
+The [`SignUp`][signup-ref] object contains the state of the current sign-up attempt.
 
-### Usage
-
-Getting access to the [`SignUp`][signup-ref] object is simple.
-
-The following example accesses the [`SignUp`][signup-ref] object to check the current sign-up attempt's status.
+The following example accesses the `SignUp` object to check the current sign-up attempt's status.
 
 ```swift
 import SwiftUI
@@ -32,7 +27,9 @@ struct SignUpStatusView: View {
 }
 ```
 
-The more involved example below shows an approach for creating a custom form for registering users. In this case, the [Password](/docs/custom-flows/email-password) strategy is used. This example assumes that additional requirements, like username or phone, are not enabled. 
+### Detailed `SignUp` example
+
+The following example demonstrates an approach for creating a custom user signup form using [the email and password](/docs/custom-flows/email-password) strategy. This example assumes that additional requirements, like username or phone, are not enabled. 
 
 ```swift
 import SwiftUI
@@ -82,13 +79,9 @@ struct SignUpView: View {
 
 ## `SignIn`
 
-The [`SignIn`][signin-ref] object and its available methods enable you to build a custom sign-in flow. The [`SignIn`][signin-ref] object will also contain the state of the sign-in attempt that is currently in progress, which gives you the ability to examine all the details and act accordingly.
+The [`SignIn`][signin-ref] object contains the state of the current sign-in attempt.
 
-### Usage
-
-Getting access to the [`SignIn`][signin-ref] object is simple.
-
-The following example accesses the [`SignIn`][signin-ref] object to check the current sign-in attempt's status.
+The following example accesses the `SignIn` object to check the current sign-in attempt's status.
 
 ```swift
 import SwiftUI
@@ -105,7 +98,9 @@ struct SignInStatusView: View {
 }
 ```
 
-The more involved example below shows an approach for creating a custom form for signing in users. In this case, a [Password](/docs/custom-flows/email-password) strategy is used.
+### Detailed `SignIn` example
+
+The following example demonstrates an approach for creating a custom user sign-in form using the [email and password](/docs/custom-flows/email-password) strategy.
 
 ```swift
 import SwiftUI
