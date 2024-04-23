@@ -12,81 +12,91 @@ description: Learn how to use Clerk to quickly and easily add secure authenticat
       title: "Set up a Clerk application",
       link: "https://clerk.com/docs/quickstarts/setup-clerk",
     },
+    {
+      title: "Have Xcode configured on your local machine",
+      link: "https://developer.apple.com/documentation/safari-developer-tools/installing-xcode-and-simulators",
+    },
   ]}
 >
 
-- Add the Clerk iOS SDK to your application
+- Install the Clerk iOS SDK with [SPM](https://www.swift.org/documentation/package-manager/)
 - Sign in an existing user
-- Access information about your user
+- Access user session data
 
 </TutorialHero>
-
-Learn how to use Clerk to quickly and easily add secure authentication and user management to your iOS application.
 
 <Steps>
 
 ### Install the SDK
 
-##### Using Swift Package Manager (SPM)
+Set up the Clerk IOS SDK in Xcode using [Swift Package Manager](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app):
 
-Open the following menu item in Xcode:
+1. In Xcode, navigate to **File > Add Package Dependencies**.
+1. In the **Search or Enter Package URL** field, enter the following repository URL:
+    ```txt filename="IOS SDK Repo URL"
+    https://github.com/clerk/clerk-ios
+    ```
+1. Then, select your preferred dependency rule and select **Add Package**.
 
-File > Add Package Dependencies...
+### Configure and load Clerk
 
-In the Search or Enter Package URL search box enter this URL:
+To configure Clerk in your local project, you first need your publishable API key:
 
-```swift
-https://github.com/clerk/clerk-ios
-```
+<SignedIn>
 
-Then, select your preferred dependency rule and press Add Package.
-
-<Callout>
-For more information on SPM, visit the [official documentation](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app).
+<Callout type="info">
+  Because you're signed in, the code snippet below will contain the publishable key for your most recently active project. Unless you want to use a different project, you can skip these steps.
 </Callout>
 
-### Configure and Load Clerk
+</SignedIn>
 
-<InjectKeys>
+1. Navigate to the Clerk Dashboard.
+2. In the navigation sidebar, select [API Keys](https://dashboard.clerk.com/last-active?path=api-keys).
+3. In the **Quick Copy** section, copy your Clerk publishable key.
+4. Add the following code snippet to your project, assigning your publishable key to the `publishableKey` property:
+    <InjectKeys>
+    <Tabs type="framework" items={["SwiftUI", "UIKit"]}>
 
-<Tabs type="framework" items={["SwiftUI", "UIKit"]}>
+    <Tab>
+    ```swift filename="App.swift"
+    import SwiftUI
+    import ClerkSDK
 
-<Tab>
-```swift filename="App.swift"
-import SwiftUI
-import ClerkSDK
-
-@main
-struct ClerkApp: App {
-    var body: some Scene {
-        WindowGroup {
-            SignInView()
-                .task {
-                    Clerk.shared.configure(publishableKey: {{pub_key}})
-                    try? await Clerk.shared.load()
-                }
+    @main
+    struct ClerkApp: App {
+        var body: some Scene {
+            WindowGroup {
+                SignInView()
+                    .task {
+                        Clerk.shared.configure(publishableKey: {{pub_key}})
+                        try? await Clerk.shared.load()
+                    }
+            }
         }
     }
-}
-```
-</Tab>
+    ```
+    </Tab>
 
-<Tab>
-```swift filename="AppDelegate"
-import UIKit
-import ClerkSDK
+    <Tab>
+    ```swift filename="AppDelegate"
+    import UIKit
+    import ClerkSDK
 
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    Clerk.shared.configure(publishableKey: {{pub_key}})
-    Task { try? await Clerk.shared.load() }
-    return true
-}
-```
-</Tab>
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        Clerk.shared.configure(publishableKey: {{pub_key}})
+        Task { try? await Clerk.shared.load() }
+        return true
+    }
+    ```
+    </Tab>
+    </Tabs>
+    </InjectKeys>
 
-</Tabs>
+### Create a sign-in view
 
-### Create a Sign In
+To see Clerk in action, create a view that allows visitors to sign-in to your Clerk app:
+
+<InjectKeys>
 
 <Tabs type="framework" items={["SwiftUI", "UIKit"]}>
 
@@ -154,3 +164,5 @@ class SignInViewController: UIViewController {
 </InjectKeys>
 
 </Steps>
+
+
